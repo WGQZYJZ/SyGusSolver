@@ -16,6 +16,8 @@ def Extend(Stmts,Productions):
         elif Stmts[i] in Productions:
             for extended in Productions[Stmts[i]]:
                 ret.append(Stmts[0:i]+[extended]+Stmts[i+1:])
+        if len(ret) > 0:
+            break
     return ret
 
 def stripComments(bmFile):
@@ -55,6 +57,7 @@ if __name__ == '__main__':
         Type[NTName] = NTType
         Productions[NTName] = NonTerm[2]
     Count = 0
+    TE_set = set()
     while(len(BfsQueue)!=0):
         Curr = BfsQueue.pop(0)
         #print("extend", Curr)
@@ -84,7 +87,6 @@ if __name__ == '__main__':
         #print(TryExtend)
         #raw_input()
         #BfsQueue+=TryExtend
-        TE_set = set()
         for TE in TryExtend:
             TE_str = str(TE)
             if not TE_str in TE_set:
