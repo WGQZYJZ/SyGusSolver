@@ -7,14 +7,14 @@ RUN apt-get update -y
 
 # z3 env for python (incl. judger)
 RUN apt-get install -y unzip python3 python3-pip
-RUN pip3 install psutil z3-solver numba
+RUN pip3 install psutil z3-solver==4.12.2.0 numba
 
 # z3 env for native (e.g., c)
 RUN apt-get install -y z3 libz3-4
 
 # z3 env for pypy
-#RUN apt-get install -y pypy3
-#RUN pypy3 -m pip install z3-solver
+# RUN apt-get install -y pypy3
+# RUN pypy3 -m pip install z3-solver
 
 # z3 env for java
 #RUN apt-get install -y openjdk-17-jdk libz3-java
