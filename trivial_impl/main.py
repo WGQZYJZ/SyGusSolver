@@ -2,6 +2,7 @@ import sys
 import sexp
 import pprint
 import translator
+import bv, lib, fallback
 
 def Extend(Stmts,Productions):
     ret = []
@@ -31,12 +32,9 @@ def stripComments(bmFile):
 if __name__ == '__main__':
     benchmarkFile = open(sys.argv[1])
     bm = stripComments(benchmarkFile)
-    #print(bm)
     bmExpr = sexp.sexp.parseString(bm, parseAll=True).asList()[0] #Parse string to python list
-    #pprint.pprint(bmExpr)
+    '''
     checker=translator.ReadQuery(bmExpr)
-    #print (checker.check('(define-fun f ((x Int)) Int (mod (* x 3) 10)  )'))
-    #raw_input()
     SynFunExpr = []
     StartSym = 'My-Start-Symbol' #virtual starting symbol
     for expr in bmExpr:
@@ -45,7 +43,6 @@ if __name__ == '__main__':
         elif expr[0]=='synth-fun':
             SynFunExpr=expr
     FuncDefine = ['define-fun']+SynFunExpr[1:4] #copy function signature
-    #print(FuncDefine)
     BfsQueue = [[StartSym]] #Top-down
     Productions = {StartSym:[]}
     Type = {StartSym:SynFunExpr[3]} # set starting symbol's return type
@@ -63,42 +60,42 @@ if __name__ == '__main__':
         #print("extend", Curr)
         TryExtend = Extend(Curr,Productions)
         if(len(TryExtend)==0): # Nothing to
-            #print(FuncDefine)
-            # print("find", Curr)
             FuncDefineStr = translator.toString(FuncDefine,ForceBracket = True) # use Force Bracket = True on function definition. MAGIC CODE. DO NOT MODIFY THE ARGUMENT ForceBracket = True.
             CurrStr = translator.toString(Curr)
-            #SynFunResult = FuncDefine+Curr
-            #Str = translator.toString(SynFunResult)
             Str = FuncDefineStr[:-1]+' '+ CurrStr+FuncDefineStr[-1] # insert Program just before the last bracket ')'
             Count += 1
-            # print (Count)
-            # print (Str)
-            # if Count % 100 == 1:
-                # print (Count)
-                # print (Str)
-                #raw_input()
-            #print '1'
             counterexample = checker.check(Str)
-            #print counterexample
             if(counterexample == None): # No counter-example
                 Ans = Str
                 break
-            #print '2'
-        #print(TryExtend)
-        #raw_input()
-        #BfsQueue+=TryExtend
         for TE in TryExtend:
             TE_str = str(TE)
             if not TE_str in TE_set:
                 BfsQueue.append(TE)
                 TE_set.add(TE_str)
+    '''
+    Type = None
+    for expr in bmExpr:
+        if type(expr) is list:
+            if expr[0] == 'set-logic':
+                Type = expr[1]
+                break
+    
+    if Type == 'BV' or Type == 'LIA':
+        try:
+            if Type == 'BV':
+                bv.solve(bmExpr)
+            else:
+                lib.genAnswer(bmExpr)
+        except Exception:
+            fallback.solve(bmExpr)
+        finally:
+            exit(0)
+    else:
+        fallback.solve(bmExpr)
 
+    '''
     print(Ans)
     with open('result.txt', 'w') as f:
         f.write(Ans)
-
-	# Examples of counter-examples    
-	# print (checker.check('(define-fun max2 ((x Int) (y Int)) Int 0)'))
-    # print (checker.check('(define-fun max2 ((x Int) (y Int)) Int x)'))
-    # print (checker.check('(define-fun max2 ((x Int) (y Int)) Int (+ x y))'))
-    # print (checker.check('(define-fun max2 ((x Int) (y Int)) Int (ite (<= x y) y x))'))
+    '''
