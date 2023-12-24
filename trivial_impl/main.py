@@ -79,19 +79,24 @@ if __name__ == '__main__':
             if expr[0] == 'set-logic':
                 Type = expr[1]
                 break
-    
+    ans = None
     if Type == 'BV' or Type == 'LIA':
         try:
             if Type == 'BV':
-                bv.solve(bmExpr)
+                ans = bv.solve(bmExpr)
+                
             else:
-                lib.genAnswer(bmExpr)
+                ans = lib.genAnswer(bmExpr)
         except Exception:
-            myfallback.solve(bmExpr)
+            ans = myfallback.solve(bmExpr)
         finally:
+            with open('result.txt', 'w') as f:
+                f.write(ans)
             exit(0)
     else:
-        myfallback.solve(bmExpr)
+        ans = myfallback.solve(bmExpr)
+        with open('result.txt', 'w') as f:
+            f.write(ans)
 
     '''
     print(Ans)

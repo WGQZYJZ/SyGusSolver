@@ -513,8 +513,9 @@ def genAnswer(bmExpr):
     strExpr = outpExpr(finalExpr)
     assert checker.check(strExpr) is None
     print(strExpr)
-    with open('result.txt', 'w') as f:
-        f.write(strExpr)
+    # with open('result.txt', 'w') as f:
+    #     f.write(strExpr)
+    return strExpr
 
 if __name__ == "__main__":
     benchmarkFile = open(sys.argv[1])

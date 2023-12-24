@@ -69,6 +69,7 @@ def solve(bmExpr):
                 BfsQueue.append(TE)
                 TE_set.add(TE_str)
     print(Ans)
-    with open('result.txt', 'w') as f:
-        f.write(Ans)
+    # with open('result.txt', 'w') as f:
+    #     f.write(Ans)
+    return Ans
    
